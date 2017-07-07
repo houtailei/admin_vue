@@ -1,0 +1,117 @@
+// 防止图像缩放超出父母的宽度.
+@mixin img-responsive($display: block) {
+  display: $display;
+  max-width: 100%; // Part 1: Set a maximum relative to the parent
+  height: auto; // Part 2: Scale the height according to the width, otherwise you get stretching
+}
+
+// Center element auto
+@mixin center-auto ($display: block) {
+	  display: $display;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Ellipsis font when text overflow
+@mixin font-ellipsis() {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// Clearfix
+//
+// For modern browsers
+// 1. The space content is one way to avoid an Opera bug when the
+//    contenteditable attribute is included anywhere else in the document.
+//    Otherwise it causes space to appear at the top and bottom of elements
+//    that are clearfixed.
+// 2. The use of `table` rather than `block` is only necessary if using
+//    `:before` to contain the top-margins of child elements.
+//
+// Source: http://nicolasgallagher.com/micro-clearfix-hack/
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// 背景图片地址和大小
+@mixin bis($url) { 
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+@mixin borderRadius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    -o-border-radius: $radius;
+    border-radius: $radius;
+}
+//定位全屏
+@mixin allcover{
+  position:absolute;
+  top:0;
+  right:0;
+}
+
+//定位上下左右居中
+@mixin center {  
+  position: absolute;
+  top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+//定位上下居中
+@mixin ct {  
+  position: absolute;
+  top: 50%;
+    transform: translateY(-50%);
+}
+
+//定位上下居中
+@mixin cl {  
+  position: absolute;
+  left: 50%;
+    transform: translateX(-50%);
+}
+
+//宽高
+@mixin wh($width, $height){
+  width: $width;
+  height: $height;
+}
+
+//字体大小、行高、字体
+@mixin font($size, $line-height, $family: 'Microsoft YaHei') {  
+  font: #{$size}/#{$line-height} $family;
+}
+
+//字体大小，颜色
+@mixin sc($size, $color){
+  font-size: $size;
+  color: $color;
+}
+
+//flex 布局和 子元素 对其方式
+@mixin fj($type: space-between){
+  display: flex;
+  justify-content: $type;
+
+}
+//flex 布局中 子元素占比
+@mixin flexScale($size){
+  -webkit-box-flex: $size;
+    -ms-flex: $size;
+    flex: $size;
+
+}

@@ -1,0 +1,7 @@
+//git上传需要忽略的文件格式
+.DS_Store
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
