@@ -8,12 +8,12 @@
       </div>
       <div class="home-list" >
         <router-link :to="{path: '/Login/Home/List', query:{articleCategoryId: todo.id}}" v-for="todo in todos" tag='div' :key="todo.id" class="homt-item">
-           <div class="icon" ></div>
+           <div class="icon" :style="bgicon"></div>
            <div>{{ todo.text }}</div>
         </router-link>
       </div>
     </div>
-  
+
   </div>
 </template>
 
@@ -24,6 +24,9 @@ export default {
   name: 'home',
   data () {
     return {
+      bgicon:{
+          backgroundImage: 'url(' + require('../assets/icon2.png') + ')',
+        },
       msg: 'Welcome to Your Vue.js App',
       username: '',
       password: '',
@@ -130,8 +133,7 @@ export default {
 }
 .homt-item .icon{
   height:60px;
-  background: url(../assets/icon2.png) center;
-  background-repeat:no-repeat;
+   background: no-repeat center ;
 }
 $postionlist : (
     1:0px,

@@ -140,6 +140,7 @@ created() {
 .home-top{
   height:250px;
   width: 100%;
+  // background: url(../assets/bj3.jpg) center;
   background: url(../assets/bj3.jpg) center;
   background-size:cover;
   position: relative;

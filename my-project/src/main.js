@@ -8,6 +8,7 @@ import router from './router'
 import Mint from './mintUi'
 
 // Inject Global Css And Themes Css
+import animate from 'animate.css'
 import './sass/index.scss'
 import './sass/themes/default.scss'
 

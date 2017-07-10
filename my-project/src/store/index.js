@@ -6,6 +6,8 @@ const store = new Vuex.Store({
   state: { //放置state的值
     //是否正在进行数据加载
     login: true,
+    //是否正在刷新
+    istop:true,
     nodata: false,
     articleCategoryId: "1",
     baseURL: "http://60.205.140.180",
@@ -240,6 +242,9 @@ const store = new Vuex.Store({
     UPDATELogin(state, data) {
       state.login = data;
     },
+    UPDATETOP(state,data){
+      state.istop=data;
+    },
     UPDATENODATA(state, data) {
       state.nodata = data;
     },
@@ -296,6 +301,7 @@ const store = new Vuex.Store({
     }) {
       if (store.state.login) {
         commit("UPDATELogin", false)
+        commit("UPDATETOP", true)
         let item = "articleCategoryId_" + store.state.articleCategoryId;
         store.state.list[item].params.pageIndex = 1;
         axios.get(store.state.baseURL + '/SysArticle/Index', {
@@ -312,6 +318,8 @@ const store = new Vuex.Store({
             }
             commit("INCREMENTVALUE", data)
             commit("UPDATELogin", true)
+            commit("UPDATETOP", false)
+
           })
           .catch(function(response) {
             console.log("调用失败");

@@ -28,28 +28,41 @@
       <mt-picker value-key="text" :slots="reading_slots" :visibleItemCount=3 @change="reading_onValuesChange"></mt-picker>
     </mt-popup>
     <img :src="nodataimg" alt="" style="width:100%;" v-if="nodata">
-    <ul v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="200" infinite-scroll-immediate-check="false">
-      <router-link :to="{path: '/Login/Home/List/Detail', query:{id: item.id}}" v-for="item in list['articleCategoryId_'+articleCategoryId].list" tag='li' :key="item.id" class="shop_li" keep-alive>
-        <section>
-          <img :src="item.image" :onerror="logo" class="shop_img">
-        </section>
-        <hgroup class="list_right">
-          <h4 :class="item.top? 'premium': ''" class="" class="list_title ellipsis">{{item.title}}</h4>
-          <div class="item_box">
-            <div class="item_articleCategory"><span style="color:#3190e8;border:1px solid #3190e8;">{{item.categoryName}}</span></div>
-            <div class="item_browseTimes">阅读量：<b>{{item.browseTimes}}</b></div>
-          </div>
-          <div class="item_box">
-            <div class="item_reviewStatusName">
-              <span style="color:#7cd43a;border:1px solid #7cd43a;" v-if="item.reviewStatus === '2'">{{item.reviewStatusName}}</span>
-              <span style="color:red;border:1px solid red;" v-else-if="item.reviewStatus === '3'">{{item.reviewStatusName}}</span>
-              <span v-else style="color:#ff6600;border:1px solid #ff6600;">{{item.reviewStatusName}}</span>
+    <mt-loadmore :top-method="loadTop" @top-status-change="handleTopChange" ref="loadmore">
+      <div slot="top" class="mint-loadmore-top">
+        <span v-show="topStatus !== 'loading'" :class="{ 'is-rotate': topStatus === 'drop' }">↓</span>
+        <mt-spinner type="triple-bounce" v-show="topStatus === 'loading'" color="#26a2ff"></mt-spinner>
+      </div>
+      <ul v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="200" infinite-scroll-immediate-check="false">
+        <router-link :to="{path: '/Login/Home/List/Detail', query:{id: item.id}}" v-for="item in list['articleCategoryId_'+articleCategoryId].list" tag='li' :key="item.id" class="shop_li" keep-alive>
+          <section>
+            <img :src="item.image" :onerror="logo" class="shop_img">
+          </section>
+          <hgroup class="list_right">
+            <h4 :class="item.top? 'premium': ''" class="" class="list_title ellipsis">{{item.title}}</h4>
+            <div class="item_box">
+              <div class="item_articleCategory"><span style="color:#3190e8;border:1px solid #3190e8;">{{item.categoryName}}</span></div>
+              <div class="item_browseTimes">阅读量：<b>{{item.browseTimes}}</b></div>
             </div>
-            <div class="item_createTime">{{item.updateTime}}</div>
-          </div>
-        </hgroup>
-      </router-link>
-    </ul>
+            <div class="item_box">
+              <div class="item_reviewStatusName">
+                <span style="color:#7cd43a;border:1px solid #7cd43a;" v-if="item.reviewStatus === '2'">{{item.reviewStatusName}}</span>
+                <span style="color:red;border:1px solid red;" v-else-if="item.reviewStatus === '3'">{{item.reviewStatusName}}</span>
+                <span v-else style="color:#ff6600;border:1px solid #ff6600;">{{item.reviewStatusName}}</span>
+              </div>
+              <div class="item_createTime">{{item.updateTime}}</div>
+            </div>
+          </hgroup>
+        </router-link>
+      </ul>
+    </mt-loadmore>
+    <transition name="bounce" enter-active-class="zoomInLeft" leave-active-class="zoomOutRight">
+      <div v-show="gotop" class="animated bounce ivu-back-top">
+        <div class="top" @click="totop">
+          <i :style="topicon"></i>
+        </div>
+      </div>
+    </transition>
   </div>
 
 </div>
@@ -70,9 +83,14 @@ export default {
   name: 'list',
   data() {
     return {
+      gotop: false,
+      topStatus: '',
       //封面图
       logo: 'this.src="' + require('../assets/noimg.png') + '"',
       nodataimg: require('../assets/nodata.png'),
+      topicon:{
+          backgroundImage: 'url(' + require('../assets/gotop.png') + ')',
+        },
       login: false,
       params: {
         sort: "updateTime,desc",
@@ -159,7 +177,7 @@ export default {
       }
     }
   },
-  computed: mapState(["baseURL", "list", "articleCategoryId", "nodata","login"]),
+  computed: mapState(["baseURL", "list", "articleCategoryId", "nodata", "login", "istop"]),
   methods: {
     ...mapActions(["getList", "getMoreList"]),
     auditStatus_onValuesChange(picker, values) {
@@ -203,12 +221,44 @@ export default {
     },
     // 滚动加载
     loadMore() {
-        this.getMoreList();
+      this.getMoreList();
+    },
+    loadTop() {
+      console.log("触发上拉刷新事件")
+      this.getList()
+      if (this.istop) {
+        setTimeout(() => {
+          this.$refs.loadmore.onTopLoaded();
+        }, 1000);
+      }
+    },
+    handleTopChange(status) {
+      console.log(status)
+      this.topStatus = status;
+    },
+    handleScroll() {
+      this.gotop = window.document.body.scrollTop > 400;
+    },
+    totop() {
+      console.log("111111111111");
+
+      var H = window.document.body.scrollTop
+      console.log(H)
+      var timer = setInterval(() => {
+        console.log(H)
+        window.scrollTo(0, H);
+        H = H - 40;
+        if (H <= 0) {
+          window.scrollTo(0, 0);
+          clearInterval(timer);
+        }
+      }, 1);
     }
   },
   mounted() {
     let scr = this.list['articleCategoryId_' + this.articleCategoryId].hig
     window.scrollTo(0, scr);
+    window.addEventListener('scroll', this.handleScroll);
   },
   beforeRouteLeave(to, from, next) {
     //离开前记录高度传给vuex
@@ -353,6 +403,29 @@ export default {
     span {
         padding: 0 2px;
     }
+
+}
+.top {
+    @include wh(40px,40px);
+    position: absolute;
+    bottom: 2rem;
+    right: 0.15rem;
+    color: #fff;
+    text-align: center;
+    border-radius: 50%;
+    background: #fff;
+    i {
+        @include wh(100%,100%);
+        display: block;
+        background-size: cover;
+    }
+}
+.ivu-back-top {
+    z-index: 10;
+    position: fixed;
+    cursor: pointer;
+    bottom: 30px;
+    right: 30px;
 
 }
 </style>
